@@ -1,0 +1,19 @@
+{
+  "name": "@dh/gateway",
+  "version": "1.0.0",
+  "description": "API gateway: single entry point for the Next.js client",
+  "private": true,
+  "main": "src/index.js",
+  "scripts": {
+    "start": "node src/index.js",
+    "dev": "nodemon src/index.js"
+  },
+  "license": "UNLICENSED",
+  "dependencies": {
+    "@dh/shared": "^1.0.0",
+    "cookie-parser": "^1.4.7",
+    "express-rate-limit": "^8.7.1",
+    "http-proxy-middleware": "^4.2.1",
+    "jsonwebtoken": "^9.0.3"
+  }
+}

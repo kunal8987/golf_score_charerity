@@ -1,0 +1,19 @@
+{
+  "name": "@dh/subscription-service",
+  "version": "1.0.0",
+  "description": "Subscription service: plans, Stripe checkout and webhooks",
+  "private": true,
+  "main": "src/index.js",
+  "scripts": {
+    "start": "node src/index.js",
+    "dev": "nodemon src/index.js"
+  },
+  "license": "UNLICENSED",
+  "dependencies": {
+    "@dh/shared": "1.0.0",
+    "axios": "^1",
+    "mongoose": "^8.24.7",
+    "stripe": "^17",
+    "zod": "^3"
+  }
+}

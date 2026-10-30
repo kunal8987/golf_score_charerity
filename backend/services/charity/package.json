@@ -1,0 +1,18 @@
+{
+  "name": "@dh/charity-service",
+  "version": "1.0.0",
+  "description": "Charity service: directory, contributions, donations",
+  "private": true,
+  "main": "src/index.js",
+  "scripts": {
+    "start": "node src/index.js",
+    "dev": "nodemon src/index.js"
+  },
+  "license": "UNLICENSED",
+  "dependencies": {
+    "@dh/shared": "1.0.0",
+    "cloudinary": "^2",
+    "mongoose": "^8.24.7",
+    "zod": "^3"
+  }
+}

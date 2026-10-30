@@ -1,0 +1,20 @@
+{
+  "name": "@dh/winner-service",
+  "version": "1.0.0",
+  "description": "Winner service: proof upload, verification, payouts",
+  "private": true,
+  "main": "src/index.js",
+  "scripts": {
+    "start": "node src/index.js",
+    "dev": "nodemon src/index.js"
+  },
+  "license": "UNLICENSED",
+  "dependencies": {
+    "@dh/shared": "1.0.0",
+    "axios": "^1",
+    "cloudinary": "^2",
+    "mongoose": "^8.24.7",
+    "multer": "^1",
+    "zod": "^3"
+  }
+}
