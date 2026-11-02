@@ -13,6 +13,13 @@ app.use(rateLimit({ windowMs: 60 * 1000, limit: 100, standardHeaders: true, lega
 // TODO Day 5: subscription status check for subscriber-only routes.
 
 // Prefix -> service. Express strips the prefix, so services define routes like /signup.
+// Service-to-service endpoints must never be reachable from the internet
+app.use("/api", (req, res, next) =>
+  req.path.includes("/internal/")
+    ? res.status(404).json({ success: false, error: { message: "Route not found" } })
+    : next()
+);
+
 const routes = [
   { prefix: "/api/auth", target: process.env.AUTH_SERVICE_URL || "http://localhost:4001" },
   { prefix: "/api/subscriptions", target: process.env.SUBSCRIPTION_SERVICE_URL || "http://localhost:4002" },
