@@ -1,10 +1,12 @@
 const { logger } = require("./logger");
 
-// Throw this from controllers: throw new AppError("Score must be 1-45", 400)
+// Throw from controllers: throw new AppError("Score must be 1-45", 400)
+// 4xx messages are always shown. 5xx messages are hidden unless expose is true.
 class AppError extends Error {
-  constructor(message, status = 500) {
+  constructor(message, status = 500, expose) {
     super(message);
     this.status = status;
+    this.expose = expose ?? status < 500;
   }
 }
 
@@ -22,9 +24,10 @@ function errorHandler(err, req, res, next) {
     logger.error({ err }, "Unhandled error");
   }
   if (res.headersSent) return next(err);
+  const exposeMessage = err.expose ?? status < 500;
   res.status(status).json({
     success: false,
-    error: { message: status >= 500 ? "Internal server error" : err.message },
+    error: { message: exposeMessage ? err.message : "Internal server error" },
   });
 }
 
