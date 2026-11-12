@@ -1,12 +1,11 @@
-const { createService, startService } = require("@dh/shared");
+const { startService, assertAuthConfig } = require("@dh/shared");
+const { createApp } = require("./app");
 
 const SERVICE = "charity-service";
-const app = createService(SERVICE);
 
-// Day 7: mount this service's routes here, for example:
-// app.use(require("./routes"));
+assertAuthConfig(); // requireAuth needs JWT_SECRET
 
-startService(SERVICE, app, process.env.PORT || 4004, { mongoUri: process.env.MONGO_URI }).catch((err) => {
+startService(SERVICE, createApp(), process.env.PORT || 4004, { mongoUri: process.env.MONGO_URI }).catch((err) => {
   console.error(err);
   process.exit(1);
 });
