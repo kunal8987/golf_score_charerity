@@ -1,8 +1,7 @@
 const express = require("express");
-const { requireAuth, requireRole, validate } = require("@dh/shared");
+const { requireAuth, requireRole, validate, requireInternalKey } = require("@dh/shared");
 const ctrl = require("../controllers/subscriptionController");
 const schemas = require("../validators/subscription.validator");
-const { requireInternalKey } = require("../middleware/internalAuth");
 
 const router = express.Router();
 
@@ -12,6 +11,7 @@ router.post("/cancel", requireAuth, ctrl.cancel);
 router.post("/resume", requireAuth, ctrl.resume);
 
 router.get("/internal/access/:userId", requireInternalKey, ctrl.internalAccess);
+router.get("/internal/subscribers/active", requireInternalKey, ctrl.activeSubscriberIds);
 
 router.get("/admin/subscriptions", requireAuth, requireRole("admin"), ctrl.adminList);
 

@@ -27,4 +27,13 @@ const updateScore = z
   .strict()
   .refine((data) => Object.keys(data).length > 0, { message: "Nothing to update" });
 
-module.exports = { createScore, updateScore };
+const internalBatch = z
+  .object({
+    userIds: z
+      .array(z.string().regex(/^[a-f\d]{24}$/i, "Invalid user id"))
+      .min(1, "userIds must not be empty")
+      .max(5000, "At most 5000 users per request"),
+  })
+  .strict();
+
+module.exports = { createScore, updateScore, internalBatch };

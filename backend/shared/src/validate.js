@@ -4,7 +4,7 @@ const { AppError } = require("./errors");
 // parsed data (unknown fields are rejected by .strict() in the schema).
 function validate(schema) {
   return (req, res, next) => {
-    const result = schema.safeParse(req.body);
+    const result = schema.safeParse(req.body ?? {}); // an empty body is treated as {}
     if (!result.success) {
       const message = result.error.issues.map((issue) => issue.message).join("; ");
       return next(new AppError(message, 400));

@@ -78,6 +78,12 @@ exports.internalAccess = async (req, res) => {
   res.json({ success: true, data: { hasAccess: sub?.status === "active" } });
 };
 
+// Called by the draw service to build the monthly draw entrant list (PRD 06)
+exports.activeSubscriberIds = async (req, res) => {
+  const subs = await Subscription.find({ status: "active" });
+  res.json({ success: true, data: { userIds: subs.map((s) => String(s.userId)) } });
+};
+
 exports.adminList = async (req, res) => {
   const page = Math.max(1, parseInt(req.query.page, 10) || 1);
   const limit = Math.min(100, Math.max(1, parseInt(req.query.limit, 10) || 20));

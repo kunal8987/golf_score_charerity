@@ -229,3 +229,48 @@ describe("admin routes", () => {
     expect(res.body.data.score.score).toBe(41);
   });
 });
+
+describe("POST /internal/scores/batch", () => {
+  const key = process.env.INTERNAL_API_KEY;
+  beforeAll(() => {
+    process.env.INTERNAL_API_KEY = "internal-test-key-0123456789abcdef";
+  });
+  afterAll(() => {
+    process.env.INTERNAL_API_KEY = key;
+  });
+
+  it("requires the internal key", async () => {
+    const res = await request(app).post("/internal/scores/batch").send({ userIds: [USER] });
+    expect(res.status).toBe(403);
+  });
+
+  it("returns the latest 5 scores per user, newest first", async () => {
+    for (const [i, d] of ["2024-03-01", "2024-03-02", "2024-03-03", "2024-03-04", "2024-03-05", "2024-03-06"].entries()) {
+      await addScore(userToken, 10 + i, d);
+    }
+    await addScore(otherToken, 40, "2024-03-01");
+
+    const res = await request(app)
+      .post("/internal/scores/batch")
+      .set("x-internal-key", process.env.INTERNAL_API_KEY)
+      .send({ userIds: [USER, OTHER] });
+
+    expect(res.status).toBe(200);
+    expect(res.body.data.scores[USER]).toEqual([15, 14, 13, 12, 11]);
+    expect(res.body.data.scores[OTHER]).toEqual([40]);
+  });
+
+  it("leaves out users with no scores", async () => {
+    const res = await request(app)
+      .post("/internal/scores/batch")
+      .set("x-internal-key", process.env.INTERNAL_API_KEY)
+      .send({ userIds: [ADMIN] });
+    expect(res.body.data.scores).toEqual({});
+  });
+
+  it("rejects an empty list and malformed ids", async () => {
+    const headers = { "x-internal-key": process.env.INTERNAL_API_KEY };
+    expect((await request(app).post("/internal/scores/batch").set(headers).send({ userIds: [] })).status).toBe(400);
+    expect((await request(app).post("/internal/scores/batch").set(headers).send({ userIds: ["nope"] })).status).toBe(400);
+  });
+});

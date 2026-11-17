@@ -9,6 +9,8 @@ function matchValue(actual, expected) {
   if (expected && typeof expected === "object") {
     if ("$in" in expected) return expected.$in.map(String).includes(String(actual));
     if ("$nin" in expected) return !expected.$nin.map(String).includes(String(actual));
+    if ("$ne" in expected) return String(actual) !== String(expected.$ne);
+    if ("$lt" in expected) return String(actual) < String(expected.$lt);
   }
   return String(actual) === String(expected);
 }

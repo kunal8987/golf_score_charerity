@@ -8,6 +8,7 @@ const { AppError, notFound, errorHandler } = require("./errors");
 const { connectDb } = require("./db");
 const { validate } = require("./validate");
 const { istDateString, toIstIso, formatIst } = require("./timezone");
+const { requireInternalKey } = require("./internal");
 const {
   COOKIE_NAME,
   assertAuthConfig,
@@ -31,6 +32,7 @@ module.exports = {
   istDateString,
   toIstIso,
   formatIst,
+  requireInternalKey,
   COOKIE_NAME,
   assertAuthConfig,
   signToken,

@@ -89,6 +89,18 @@ exports.remove = async (req, res) => {
 };
 
 // Admin: view any user's scores (PRD 11: edit golf scores)
+// Called by the draw service. Returns each listed user's latest 5 scores (newest first).
+exports.internalLatestScores = async (req, res) => {
+  const docs = await Score.find({ userId: { $in: req.body.userIds } }).sort({ playedOn: -1 });
+  const scores = {};
+  for (const doc of docs) {
+    const key = String(doc.userId);
+    scores[key] = scores[key] || [];
+    if (scores[key].length < MAX) scores[key].push(doc.score);
+  }
+  res.json({ success: true, data: { scores } });
+};
+
 exports.adminList = async (req, res) => {
   const filter = {};
   if (req.query.userId) {

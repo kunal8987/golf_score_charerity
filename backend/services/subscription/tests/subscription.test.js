@@ -284,3 +284,20 @@ describe("admin routes", () => {
     expect(res.body.data.subscriptions[0].status).toBe("lapsed");
   });
 });
+
+describe("GET /internal/subscribers/active", () => {
+  it("requires the internal key", async () => {
+    const res = await request(app).get("/internal/subscribers/active");
+    expect(res.status).toBe(403);
+  });
+
+  it("lists only active subscribers", async () => {
+    Subscription.seed({ userId: "a".repeat(24), status: "active" });
+    Subscription.seed({ userId: "b".repeat(24), status: "lapsed" });
+    Subscription.seed({ userId: "c".repeat(24), status: "active" });
+    const res = await request(app)
+      .get("/internal/subscribers/active")
+      .set("x-internal-key", process.env.INTERNAL_API_KEY);
+    expect(res.body.data.userIds.sort()).toEqual(["a".repeat(24), "c".repeat(24)]);
+  });
+});

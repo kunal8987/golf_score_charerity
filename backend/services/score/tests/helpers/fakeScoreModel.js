@@ -10,6 +10,9 @@ function matches(doc, filter) {
     if (value && typeof value === "object" && "$nin" in value) {
       return !value.$nin.map(String).includes(String(doc[key]));
     }
+    if (value && typeof value === "object" && "$in" in value) {
+      return value.$in.map(String).includes(String(doc[key]));
+    }
     return String(doc[key]) === String(value);
   });
 }
