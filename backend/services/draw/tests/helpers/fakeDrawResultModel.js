@@ -26,6 +26,13 @@ const DrawResult = {
     return chainFor(docs.filter((d) => matches(d, filter)), wrap);
   },
 
+  findOneAndUpdate(filter, update = {}) {
+    const raw = docs.find((d) => matches(d, filter));
+    if (!raw) return Promise.resolve(null);
+    Object.assign(raw, update.$set || {});
+    return Promise.resolve(wrap(raw));
+  },
+
   countDocuments: (filter = {}) => Promise.resolve(docs.filter((d) => matches(d, filter)).length),
 
   all: () => docs,

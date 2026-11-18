@@ -12,3 +12,7 @@ const createDraw = z.object({ month, mode: mode.default("random") }).strict();
 const simulateDraw = z.object({ mode: mode.optional() }).strict();
 
 module.exports = { createDraw, simulateDraw };
+
+// Used by the winner service's internal payout update
+const payoutUpdate = z.object({ payoutStatus: z.enum(["pending", "paid"]) }).strict();
+module.exports.payoutUpdate = payoutUpdate;

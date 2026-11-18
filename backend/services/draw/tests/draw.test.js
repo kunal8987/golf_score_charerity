@@ -235,3 +235,48 @@ describe("admin views and reports", () => {
     expect((await request(app).get("/admin/reports/draws").set(auth(aToken))).status).toBe(403);
   });
 });
+
+describe("internal endpoints for the winner service", () => {
+  const key = { "x-internal-key": "internal-test-key-0123456789abcdef" };
+  beforeAll(() => {
+    process.env.INTERNAL_API_KEY = "internal-test-key-0123456789abcdef";
+  });
+
+  it("requires the internal key", async () => {
+    expect((await request(app).get("/internal/winners")).status).toBe(403);
+  });
+
+  it("lists winners from published draws only, with their month", async () => {
+    const id = await simulated();
+    await request(app).post(`/admin/draws/${id}/publish`).set(auth(adminToken));
+    await simulated("2026-11"); // not published, so its winners must not appear
+
+    const res = await request(app).get("/internal/winners").set(key);
+    expect(res.body.data.winners).toHaveLength(1);
+    expect(res.body.data.winners[0]).toMatchObject({ userId: A, tier: "five", month: "2026-10", prizePaise: 12000 });
+  });
+
+  it("mirrors a payout status onto the entry", async () => {
+    const id = await simulated();
+    await request(app).post(`/admin/draws/${id}/publish`).set(auth(adminToken));
+    const winner = (await request(app).get("/internal/winners").set(key)).body.data.winners[0];
+
+    const res = await request(app)
+      .patch(`/internal/results/${winner.drawResultId}/payout`)
+      .set(key)
+      .send({ payoutStatus: "paid" });
+    expect(res.status).toBe(200);
+    expect(DrawResult.all().find((r) => String(r._id) === winner.drawResultId).payoutStatus).toBe("paid");
+  });
+
+  it("refuses to mirror a payout onto a non-winning entry", async () => {
+    const id = await simulated();
+    await request(app).post(`/admin/draws/${id}/publish`).set(auth(adminToken));
+    const loser = DrawResult.all().find((r) => r.tier === null);
+    const res = await request(app)
+      .patch(`/internal/results/${loser._id}/payout`)
+      .set(key)
+      .send({ payoutStatus: "paid" });
+    expect(res.status).toBe(404);
+  });
+});
