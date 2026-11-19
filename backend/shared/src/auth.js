@@ -73,6 +73,7 @@ module.exports = {
   assertAuthConfig,
   signToken,
   verifyToken,
+  extractToken,
   cookieOptions,
   requireAuth,
   requireRole,

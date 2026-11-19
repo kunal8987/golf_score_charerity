@@ -3,10 +3,10 @@ const { connectDb } = require("./db");
 const { notFound, errorHandler } = require("./errors");
 
 // Call AFTER all routes are mounted, so 404 and error handlers come last.
-async function startService(name, app, port, { mongoUri } = {}) {
+async function startService(name, app, port, { mongoUri, expectDb = true } = {}) {
   if (mongoUri) {
     await connectDb(mongoUri, name);
-  } else {
+  } else if (expectDb) {
     logger.warn(`${name}: MONGO_URI not set, running without a database`);
   }
 
